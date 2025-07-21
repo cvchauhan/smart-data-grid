@@ -1,0 +1,33 @@
+{
+  "name": "smart-data-grid",
+  "version": "0.1.0",
+  "main": "dist/smart-data-grid.umd.js",
+  "module": "dist/smart-data-grid.es.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "data-grid",
+    "web-component",
+    "custom-element",
+    "table",
+    "typescript"
+  ],
+  "author": "Chirag Chauhan",
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^4.0.0",
+    "rollup-plugin-typescript2": "^0.35.0",
+    "typescript": "^5.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cvchauhan/smart-data-grid"
+  }
+}
