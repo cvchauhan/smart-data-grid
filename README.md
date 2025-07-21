@@ -1,17 +1,16 @@
-# 🔳 smart-data-grid
+# smart-data-grid
 
-A lightweight, framework-agnostic, Web Component (Custom Element) for rendering smart data tables using just configuration — no manual HTML required.
+A scalable, high-performance data grid Web Component with:
 
-✅ Works in **React**, **Angular**, **Vue**, **Next.js**, or **plain HTML**  
-✅ Just pass your `data` and `header` as JSON  
-✅ Supports filtering, pagination (coming soon)  
-✅ Built with TypeScript
+- ✅ Column filtering
+- ✅ Global search
+- ✅ Pagination
+- ✅ Virtual scroll (coming soon)
+- ✅ Works in React, Angular, Vue, and plain HTML
 
----
+## Install
 
-## 🚀 Installation
-
-```bash
+````bash
 npm install smart-data-grid
 ```
 
@@ -23,7 +22,7 @@ npm install smart-data-grid
 
 ```ts
 import "smart-data-grid"; // Registers <smart-data-grid> globally
-```
+````
 
 Then use it like this:
 

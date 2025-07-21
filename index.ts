@@ -1,1 +1,1 @@
-export * from "./src/SmartDataGrid";
+export * from "./src/components/SmartDataGrid";
