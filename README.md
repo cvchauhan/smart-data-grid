@@ -22,7 +22,7 @@ npm install smart-data-grid
 ### ➤ In React, Angular, Vue, or HTML
 
 ```ts
-import 'smart-data-grid'; // Registers <smart-data-grid> globally
+import "smart-data-grid"; // Registers <smart-data-grid> globally
 ```
 
 Then use it like this:
@@ -37,9 +37,9 @@ Then use it like this:
 You can also programmatically set attributes:
 
 ```ts
-const grid = document.getElementById('grid');
-grid.setAttribute('data', JSON.stringify(data));
-grid.setAttribute('header', JSON.stringify(header));
+const grid = document.getElementById("grid");
+grid.setAttribute("data", JSON.stringify(data));
+grid.setAttribute("header", JSON.stringify(header));
 ```
 
 ---
@@ -57,12 +57,12 @@ grid.setAttribute('header', JSON.stringify(header));
 
 ## 📦 Props
 
-| Attribute | Type     | Description                      |
-|----------|----------|----------------------------------|
-| `data`   | string   | JSON stringified array of rows   |
-| `header` | string   | JSON stringified array of column config (`{ key, label }`) |
-| `pagination` | boolean (optional) | Enables pagination |
-| `filter`     | boolean (optional) | Enables filter input |
+| Attribute    | Type               | Description                                                |
+| ------------ | ------------------ | ---------------------------------------------------------- |
+| `data`       | string             | JSON stringified array of rows                             |
+| `header`     | string             | JSON stringified array of column config (`{ key, label }`) |
+| `pagination` | boolean (optional) | Enables pagination                                         |
+| `filter`     | boolean (optional) | Enables filter input                                       |
 
 ---
 
@@ -115,10 +115,10 @@ npx serve .
 
 ## 📁 Source Code
 
-https://github.com/your-username/smart-data-grid
+https://github.com/cvchauhan/smart-data-grid
 
 ---
 
 ## 📝 License
 
-MIT © 2024 [Your Name]
+MIT © 2025 Chirag Chauhan
