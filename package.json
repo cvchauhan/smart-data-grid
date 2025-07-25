@@ -1,34 +1,44 @@
 {
   "name": "smart-data-grid",
-  "version": "0.1.1",
-  "main": "dist/smart-data-grid.umd.js",
-  "module": "dist/smart-data-grid.es.js",
-  "types": "dist/index.d.ts",
+  "version": "1.0.0",
+  "description": "Smart Data Grid Web Component",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "scripts": {
+    "build": "vite build && tsc"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "bootstrap": "^5.3.7",
+    "react-to-webcomponent": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "typescript": "^5.8.3",
+    "vite": "^5.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/smart-data-grid.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "rollup -c",
-    "prepublishOnly": "npm run build"
-  },
-  "author": "Chirag Chauhan",
-  "license": "MIT",
   "keywords": [
     "data-grid",
     "web-component",
-    "custom-element",
-    "typescript",
-    "filter",
-    "pagination",
-    "virtual-scroll"
+    "react"
   ],
-  "devDependencies": {
-    "rollup": "^3.0.0",
-    "rollup-plugin-typescript2": "^0.34.0",
-    "typescript": "^5.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/cvchauhan/smart-data-grid"
-  }
+  "author": "",
+  "license": "MIT"
 }
