@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    dedupe: ["react", "react-dom"], // <--- critical!
+    dedupe: ["react", "react-dom/client"], // <--- critical!
   },
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
@@ -22,11 +22,11 @@ export default defineConfig({
       formats: ["es", "umd"],
     },
     rollupOptions: {
-      external: ["react", "react-dom"], // <--- do NOT bundle these
+      external: ["react", "react-dom/client"], // <--- do NOT bundle these
       output: {
         globals: {
           react: "React",
-          "react-dom": "ReactDOM",
+          "react-dom/client": "ReactDOM",
         },
       },
     },

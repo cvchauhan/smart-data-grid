@@ -7,10 +7,6 @@
   "scripts": {
     "build": "vite build && tsc"
   },
-  "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
-  },
   "dependencies": {
     "@vitejs/plugin-react": "^4.7.0",
     "bootstrap": "^5.3.7",

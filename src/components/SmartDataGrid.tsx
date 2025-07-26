@@ -1,31 +1,53 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ColumnDefinition } from '../types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface Props {
-  dataSource: any[];
-  columns: ColumnDefinition[];
+  dataSource?: string;
+  columns?: string;
   defaultSortKey?: string;
-  paginationOptions?: number[];
-  enableSelection?: boolean;
+  paginationOptions?: string;
+  enableSelection?: string;
   action?: (rows: any[]) => void;
 }
 
-const SmartDataGrid: React.FC<Props> = ({
-  dataSource = [],
-  columns = [],
-  defaultSortKey,
-  paginationOptions = [10, 20, 30, 50, 100],
-  enableSelection = false,
-  action
-}) => {
+const SmartDataGrid: React.FC<Props> = (props) => {
+  const parseJSON = <T,>(value: any, fallback: T): T => {
+    try {
+      return typeof value === 'string' ? JSON.parse(value) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
+
+  const [tableData, setTableData] = useState<any[]>([]);
+  const [columnDefs, setColumnDefs] = useState<ColumnDefinition[]>([]);
+  const [pagination, setPagination] = useState<number[]>([10, 20, 30, 50, 100]);
+  const [selectionEnabled, setSelectionEnabled] = useState(false);
+
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(paginationOptions[0]);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const sortedData = defaultSortKey
-    ? [...dataSource].sort((a, b) => (a[defaultSortKey] > b[defaultSortKey] ? 1 : -1))
-    : dataSource;
+  // When props are available, parse them once
+  useEffect(() => {
+    const parsedData = parseJSON<any[]>(props.dataSource, []);
+    const parsedColumns = parseJSON<ColumnDefinition[]>(props.columns, []);
+    const parsedPagination = parseJSON<number[]>(props.paginationOptions, [10, 20, 30, 50, 100]);
+    const parsedSelection = props.enableSelection === 'true';
+
+    setTableData(parsedData);
+    setColumnDefs(parsedColumns);
+    setPagination(parsedPagination);
+    setSelectionEnabled(parsedSelection);
+    setRowsPerPage(parsedPagination[0]);
+    setSelectedRows([]);
+    setCurrentPage(1);
+  }, [props.dataSource, props.columns, props.paginationOptions, props.enableSelection]);
+
+  const sortedData = props.defaultSortKey
+    ? [...tableData].sort((a, b) => (a[props.defaultSortKey!] > b[props.defaultSortKey!] ? 1 : -1))
+    : tableData;
 
   const paginatedData = sortedData.slice(
     (currentPage - 1) * rowsPerPage,
@@ -38,14 +60,14 @@ const SmartDataGrid: React.FC<Props> = ({
       ? selectedRows.filter(r => r !== row)
       : [...selectedRows, row];
     setSelectedRows(updated);
-    action?.(updated);
+    props.action?.(updated);
   };
 
   const toggleSelectAll = () => {
     const allSelected = selectedRows.length === paginatedData.length;
     const updated = allSelected ? [] : [...paginatedData];
     setSelectedRows(updated);
-    action?.(updated);
+    props.action?.(updated);
   };
 
   return (
@@ -53,7 +75,7 @@ const SmartDataGrid: React.FC<Props> = ({
       <table className="table table-bordered table-hover">
         <thead className="table-light">
           <tr>
-            {enableSelection && (
+            {selectionEnabled && (
               <th scope="col">
                 <input
                   type="checkbox"
@@ -62,15 +84,15 @@ const SmartDataGrid: React.FC<Props> = ({
                 />
               </th>
             )}
-            {columns.map(col => (
-              <th scope="col" key={col.field}>{col.header}</th>
+            {columnDefs.map(col => (
+              <th key={col.field}>{col.header}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {paginatedData.map((row, i) => (
             <tr key={i}>
-              {enableSelection && (
+              {selectionEnabled && (
                 <td>
                   <input
                     type="checkbox"
@@ -79,7 +101,7 @@ const SmartDataGrid: React.FC<Props> = ({
                   />
                 </td>
               )}
-              {columns.map(col => {
+              {columnDefs.map(col => {
                 const value = row[col.field];
                 const show = col.showLinkConditions?.(row) ?? true;
 
@@ -107,7 +129,7 @@ const SmartDataGrid: React.FC<Props> = ({
       <div className="d-flex align-items-center gap-2">
         <label className="form-label mb-0 me-2">Rows per page:</label>
         <select className="form-select w-auto" onChange={(e) => setRowsPerPage(+e.target.value)} value={rowsPerPage}>
-          {paginationOptions.map(p => (
+          {pagination.map(p => (
             <option key={p} value={p}>{p}</option>
           ))}
         </select>
