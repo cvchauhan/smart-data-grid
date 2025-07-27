@@ -24,12 +24,6 @@ A powerful, feature-rich data grid library that works across all modern framewor
 npm install smart-data-grid
 ```
 
-Or use via CDN:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/smart-data-grid/dist/smart-data-grid.umd.js"></script>
-```
-
 ---
 
 ## 🚀 Quick Start
@@ -104,34 +98,6 @@ const MyComponent = () => {
 };
 ```
 
-### Web Component Example
-
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <script src="https://cdn.jsdelivr.net/npm/smart-data-grid/dist/smart-data-grid.umd.js"></script>
-  </head>
-  <body>
-    <smart-data-grid
-      id="myGrid"
-      data='[
-      {"name":"Alice","age":25,"email":"alice@example.com"},
-      {"name":"Bob","age":30,"email":"bob@example.com"}
-    ]'
-      header='[
-      {"key":"name","label":"Name"},
-      {"key":"age","label":"Age"},
-      {"key":"email","label":"Email"}
-    ]'
-      pagination="true"
-      filter="true"
-      theme="modern"
-    ></smart-data-grid>
-  </body>
-</html>
-```
-
 ---
 
 ## 📋 Props & Configuration
@@ -159,6 +125,7 @@ const MyComponent = () => {
 interface ColumnConfig {
   field: string; // Data field key
   header: string; // Column header text
+  sortable?: boolean; // Column sort diable by default true
   type?: "text" | "button" | "link"; // Column type
   clickFn?: (row: any) => void; // Click handler for button/link types
   showLinkConditions?: (row: any) => boolean; // Conditional display logic
@@ -171,6 +138,7 @@ interface ColumnConfig {
 | ------------------ | --------- | ------------------------------------------------- |
 | `data`             | `string`  | JSON stringified array of data                    |
 | `header`           | `string`  | JSON stringified column configuration             |
+| `sortable`         | `boolean` | Disable sorting                                   |
 | `pagination`       | `boolean` | Enable pagination                                 |
 | `filter`           | `boolean` | Enable global search                              |
 | `theme`            | `string`  | Theme name ('modern', 'classic', 'dark')          |
@@ -244,38 +212,6 @@ The grid supports exporting data in multiple formats:
 - **JSON** - Structured JSON format
 - **Excel** - .xls format that opens in Microsoft Excel
 
-### Programmatic Export
-
-```typescript
-// Access the grid ref to trigger exports programmatically
-const gridRef = useRef();
-
-const exportData = (format) => {
-  gridRef.current?.exportData(format);
-};
-
-// Usage
-<button onClick={() => exportData("csv")}>Export CSV</button>;
-```
-
-### Programmatic Control
-
-```javascript
-// Web Component
-const grid = document.getElementById("myGrid");
-
-// Update data
-grid.setAttribute("data", JSON.stringify(newData));
-
-// Change theme
-grid.setAttribute("theme", "dark");
-
-// Listen for events
-grid.addEventListener("selectionChange", (event) => {
-  console.log("Selected rows:", event.detail);
-});
-```
-
 ### Action Columns
 
 ```typescript
@@ -330,64 +266,9 @@ const handleSelectionChange = (selectedRows) => {
 - **Debounced Search** - Prevents excessive filtering during typing
 - **Virtual Scrolling** - Coming in v2.0 for ultra-large datasets
 
----
-
-## 🌐 Browser Support
-
-- Chrome 88+
-- Firefox 85+
-- Safari 14+
-- Edge 88+
-
----
-
 ## 🔄 Migration Guide
 
-### From v1.x to v2.x
-
-```typescript
-// Old API
-<SmartDataGrid
-  data={data}
-  headers={headers}
-  showPagination={true}
-/>
-
-// New API
-<SmartDataGrid
-  dataSource={data}
-  columns={columns}
-  paginationOptions={[10, 25, 50]}
-/>
-```
-
----
-
 ## 🧪 Examples
-
-### Basic Table
-
-```html
-<smart-data-grid
-  data='[{"name":"John","age":30},{"name":"Jane","age":25}]'
-  header='[{"key":"name","label":"Full Name"},{"key":"age","label":"Age"}]'
-></smart-data-grid>
-```
-
-### With Search and Pagination
-
-```html
-<smart-data-grid
-  data="[...]"
-  header="[...]"
-  filter="true"
-  pagination="true"
-  theme="modern"
-  page-size="25"
-  enable-export="true"
-  export-formats="csv,json,excel"
-></smart-data-grid>
-```
 
 ### React with Selection
 

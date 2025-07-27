@@ -253,7 +253,7 @@ const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
     <div className={`smart-data-grid ${theme}`}>
       {/* Header */}
       <div className="grid-header">
-        {title && <h3 className="grid-title">{title}</h3>}
+        <h3 className="grid-title">{title ? title : ""}</h3>
         <div className="grid-controls">
           {searchable && (
             <div className="search-box">
@@ -263,14 +263,16 @@ const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
+                disabled={dataSource.length === 0}
               />
               <span className="search-icon">🔍</span>
             </div>
           )}
 
           <div className="rows-per-page">
-            <label>Show</label>
+            <label htmlFor="Show">Show</label>
             <select
+              disabled={dataSource.length === 0}
               value={rowsPerPage}
               onChange={(e) => {
                 setRowsPerPage(+e.target.value);
@@ -284,13 +286,14 @@ const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
                 </option>
               ))}
             </select>
-            <label>entries</label>
+            <label htmlFor="entries">entries</label>
           </div>
 
           {/* Export Dropdown */}
           {enableExport && (
             <div className="export-controls">
               <select
+                disabled={dataSource.length === 0}
                 onChange={(e) => {
                   if (e.target.value) {
                     handleExport(e.target.value);
@@ -347,6 +350,7 @@ const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
               {enableSelection && (
                 <th className="checkbox-column">
                   <input
+                    disabled={dataSource.length === 0}
                     type="checkbox"
                     onChange={toggleSelectAll}
                     checked={
@@ -372,18 +376,24 @@ const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
                   <th
                     key={col.field}
                     onClick={() =>
-                      isSortable ? handleSort(col.field) : undefined
+                      isSortable && dataSource.length
+                        ? handleSort(col.field)
+                        : ""
                     }
-                    className={`sortable-header ${
-                      isSortable ? "cursor-pointer" : "cursor-default"
+                    className={`sortable-header-${theme} ${
+                      isSortable && dataSource.length
+                        ? "cursor-pointer"
+                        : "cursor-default"
                     }`}
                   >
                     <div className="header-content">
                       <span>{col.header}</span>
-                      {isSortable && (
+                      {isSortable && dataSource.length ? (
                         <span className="sort-icon">
                           {getSortIcon(col.field)}
                         </span>
+                      ) : (
+                        ""
                       )}
                     </div>
                   </th>
@@ -470,14 +480,14 @@ const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
         <div className="pagination">
           <button
             onClick={() => setCurrentPage(1)}
-            disabled={currentPage === 1}
+            disabled={currentPage === 1 || dataSource.length === 0}
             className="page-btn"
           >
             ⏮️
           </button>
           <button
             onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
+            disabled={currentPage === 1 || dataSource.length === 0}
             className="page-btn"
           >
             ◀️
@@ -512,14 +522,14 @@ const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
             onClick={() =>
               setCurrentPage((prev) => Math.min(totalPages, prev + 1))
             }
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || dataSource.length === 0}
             className="page-btn"
           >
             ▶️
           </button>
           <button
             onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || dataSource.length === 0}
             className="page-btn"
           >
             ⏭️

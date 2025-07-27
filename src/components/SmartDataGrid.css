@@ -150,8 +150,12 @@
   user-select: none;
 }
 
-.sortable-header:hover {
+.sortable-header-light:hover,
+.sortable-header-modern:hover {
   background: #e9ecef;
+}
+.sortable-header-dark:hover {
+  background: #1e293b;
 }
 
 .header-content {
@@ -264,7 +268,11 @@ tr.modern-selected {
   background: var(--row-hover, #f5f5f5);
 }
 
-.page-btn:disabled {
+.page-btn:disabled,
+.rows-select:disabled,
+.search-input:disabled,
+.export-select:disabled,
+.checkbox:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
