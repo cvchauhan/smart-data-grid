@@ -1,16 +1,22 @@
 {
   "name": "smart-data-grid",
   "version": "1.0.0",
-  "description": "Smart Data Grid Web Component",
+  "description": "Modern Smart Data Grid - React Component & Web Component",
   "main": "dist/index.js",
+  "module": "dist/smart-data-grid.mjs",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "build": "vite build && tsc"
+    "build": "vite build && tsc",
+    "dev": "vite build --watch",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.7.0",
-    "bootstrap": "^5.3.7",
     "react-to-webcomponent": "^2.0.1"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
@@ -25,16 +31,29 @@
       "import": "./dist/smart-data-grid.mjs",
       "require": "./dist/index.js",
       "types": "./dist/types/index.d.ts"
-    }
+    },
+    "./styles": "./dist/style.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "dist/SmartDataGrid.css"
   ],
   "keywords": [
     "data-grid",
+    "table",
+    "react",
     "web-component",
-    "react"
+    "typescript",
+    "modern-ui",
+    "pagination",
+    "sorting",
+    "search"
   ],
-  "author": "",
-  "license": "MIT"
+  "author": "Chirag Chauhan",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cvchauhan/smart-data-grid"
+  }
 }

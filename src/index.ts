@@ -1,16 +1,23 @@
+// src/index.ts
 import React from "react";
 import { createRoot } from "react-dom/client";
 import reactToWebComponent from "react-to-webcomponent";
 import SmartDataGrid from "./components/SmartDataGrid";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "./SmartDataGrid.css"; // 👈 Ensures styles are bundled
 
-// Wrap SmartDataGrid as Web Component
-const SmartGridElement = reactToWebComponent(SmartDataGrid, React, {
-  createRoot,
-});
-
-// Define it for browser
-customElements.define("smart-data-grid", SmartGridElement);
-
-// Optional: Export component for React use
+// Export both versions
 export { SmartDataGrid };
+
+// Export types
+export type { SmartDataGridProps, ColumnDefinition } from "./types";
+
+// Web component registration (only when in browser)
+if (typeof window !== "undefined" && typeof customElements !== "undefined") {
+  const SmartGridElement = reactToWebComponent(SmartDataGrid, React, {
+    createRoot,
+  });
+
+  if (!customElements.get("smart-data-grid")) {
+    customElements.define("smart-data-grid", SmartGridElement);
+  }
+}

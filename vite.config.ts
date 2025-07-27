@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    dedupe: ["react", "react-dom/client"], // <--- critical!
+    dedupe: ["react", "react-dom", "react-dom/client"],
   },
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
@@ -22,13 +22,23 @@ export default defineConfig({
       formats: ["es", "umd"],
     },
     rollupOptions: {
-      external: ["react", "react-dom/client"], // <--- do NOT bundle these
+      external: ["react", "react-dom", "react-dom/client"],
       output: {
         globals: {
           react: "React",
+          "react-dom": "ReactDOM",
           "react-dom/client": "ReactDOM",
+        },
+        // Fixed: Proper typing for assetFileNames
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name && assetInfo.name.endsWith(".css")) {
+            return "style.css";
+          }
+          return assetInfo.name || "assets/[name][extname]";
         },
       },
     },
+    // Extract CSS into a single file
+    cssCodeSplit: false,
   },
 });
