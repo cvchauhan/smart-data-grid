@@ -285,6 +285,7 @@ const columns = [
     field: "edit",
     header: "Actions",
     type: "button",
+    sortable: false,
     clickFn: (row) => {
       // Handle edit action
       openEditModal(row);
@@ -430,7 +431,12 @@ npm test
 
 ## 📝 Changelog
 
-### v2.2.0 (Latest)
+### v2.2.1 (Latest)
+
+- ✅ You can now disable sorting for specific columns by adding `sortable: false`
+- ✅ Dark Theme colum selection background color issue resolved
+
+### v2.2.0
 
 - ✅ Added comprehensive data export functionality
 - ✅ Support for CSV, JSON, and Excel export formats
