@@ -176,8 +176,13 @@
   background: var(--row-hover, #f5f5f5);
 }
 
-.modern-table tr.selected {
+.modern-table tr.light-selected,
+tr.modern-selected {
   background: #e3f2fd;
+}
+
+.modern-table tr.dark-selected {
+  background: #1e293b;
 }
 
 .checkbox-column {

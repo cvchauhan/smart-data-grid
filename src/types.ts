@@ -4,6 +4,7 @@ export interface ColumnConfig {
   field: string;
   header: string;
   type?: "text" | "button" | "link";
+  sortable?: boolean;
   clickFn?: (row: any) => void;
   showLinkConditions?: (row: any) => boolean;
 }
