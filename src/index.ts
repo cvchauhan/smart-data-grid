@@ -3,7 +3,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import reactToWebComponent from "react-to-webcomponent";
 import SmartDataGrid from "./components/SmartDataGrid";
-import "./SmartDataGrid.css"; // 👈 Ensures styles are bundled
 
 // Export both versions
 export { SmartDataGrid };

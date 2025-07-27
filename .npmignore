@@ -1,0 +1,15 @@
+# Ignore tests and setup
+__tests__/
+tests/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+jest.config.js
+jest.setup.js
+tsconfig.test.json
+
+# Ignore other unnecessary files
+coverage/
+.vscode/
+*.log

@@ -1,6 +1,7 @@
 // src/components/SmartDataGridReact.tsx
 import React, { useEffect, useState, useMemo } from 'react';
 import { SmartDataGridProps } from '../types';
+import './SmartDataGrid.css'; // Custom styles
 
 const SmartDataGrid: React.FC<SmartDataGridProps> = ({
   dataSource = [],
