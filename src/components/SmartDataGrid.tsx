@@ -1,9 +1,9 @@
-// src/components/SmartDataGrid.tsx
+// src/components/SmartDataGridReact.tsx
 import React, { useEffect, useState, useMemo } from 'react';
 import { SmartDataGridProps } from '../types';
 import './SmartDataGrid.css'; // Custom styles
 
-const SmartDataGrid: React.FC<SmartDataGridProps> = ({
+const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
   dataSource = [],
   columns = [],
   defaultSortKey,
@@ -12,7 +12,10 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
   onSelectionChange,
   theme = 'modern',
   title,
-  searchable = true
+  searchable = true,
+  enableExport = false,
+  exportFormats = ['csv', 'json'],
+  exportFileName = 'data-export'
 }) => {
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -120,6 +123,99 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
     return sortConfig.direction === 'asc' ? '↑' : '↓';
   };
 
+  // Export functionality
+  const exportToCSV = (data: any[]) => {
+    if (data.length === 0) return;
+
+    // Get headers for export (exclude action columns)
+    const exportColumns = columns.filter(col => col.type !== 'button' && col.type !== 'link');
+    const headers = exportColumns.map(col => col.header).join(',');
+    
+    // Get data rows
+    const csvRows = data.map(row => 
+      exportColumns.map(col => {
+        const value = row[col.field];
+        // Escape commas and quotes in CSV
+        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+          return `"${value.replace(/"/g, '""')}"`;
+        }
+        return value || '';
+      }).join(',')
+    );
+    
+    const csvContent = [headers, ...csvRows].join('\n');
+    downloadFile(csvContent, `${exportFileName}.csv`, 'text/csv');
+  };
+
+  const exportToJSON = (data: any[]) => {
+    if (data.length === 0) return;
+
+    // Filter out action columns for cleaner export
+    const exportColumns = columns.filter(col => col.type !== 'button' && col.type !== 'link');
+    const cleanData = data.map(row => {
+      const cleanRow: any = {};
+      exportColumns.forEach(col => {
+        cleanRow[col.field] = row[col.field];
+      });
+      return cleanRow;
+    });
+
+    const jsonContent = JSON.stringify(cleanData, null, 2);
+    downloadFile(jsonContent, `${exportFileName}.json`, 'application/json');
+  };
+
+  const exportToExcel = (data: any[]) => {
+    if (data.length === 0) return;
+
+    // Create HTML table for Excel
+    const exportColumns = columns.filter(col => col.type !== 'button' && col.type !== 'link');
+    const headers = exportColumns.map(col => `<th>${col.header}</th>`).join('');
+    const rows = data.map(row => 
+      `<tr>${exportColumns.map(col => `<td>${row[col.field] || ''}</td>`).join('')}</tr>`
+    ).join('');
+
+    const htmlTable = `
+      <table>
+        <thead><tr>${headers}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+
+    downloadFile(htmlTable, `${exportFileName}.xls`, 'application/vnd.ms-excel');
+  };
+
+  const downloadFile = (content: string, fileName: string, mimeType: string) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExport = (format: string) => {
+    // Determine what data to export
+    const dataToExport = selectedRows.length > 0 ? selectedRows : sortedData;
+    
+    switch (format.toLowerCase()) {
+      case 'csv':
+        exportToCSV(dataToExport);
+        break;
+      case 'json':
+        exportToJSON(dataToExport);
+        break;
+      case 'excel':
+      case 'xls':
+        exportToExcel(dataToExport);
+        break;
+      default:
+        console.error('Unsupported export format:', format);
+    }
+  };
+
   return (
     <div className={`smart-data-grid ${theme}`}>
       {/* Header */}
@@ -155,6 +251,30 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
             </select>
             <label>entries</label>
           </div>
+
+          {/* Export Dropdown */}
+          {enableExport && (
+            <div className="export-controls">
+              <select 
+                onChange={(e) => {
+                  if (e.target.value) {
+                    handleExport(e.target.value);
+                    e.target.value = ''; // Reset selection
+                  }
+                }}
+                className="export-select"
+                defaultValue=""
+              >
+                <option value="" disabled>Export...</option>
+                {exportFormats.includes('csv') && <option value="csv">Export as CSV</option>}
+                {exportFormats.includes('json') && <option value="json">Export as JSON</option>}
+                {exportFormats.includes('excel') && <option value="excel">Export as Excel</option>}
+              </select>
+              {selectedRows.length > 0 && (
+                <span className="export-info">({selectedRows.length} selected)</span>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -339,4 +459,4 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
   );
 };
 
-export default SmartDataGrid;
+export default SmartDataGridReact;

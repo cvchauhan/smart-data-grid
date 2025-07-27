@@ -1,6 +1,6 @@
 {
   "name": "smart-data-grid",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "description": "Modern Smart Data Grid - React Component & Web Component",
   "main": "dist/index.js",
   "module": "dist/smart-data-grid.mjs",

@@ -8,7 +8,7 @@ import SmartDataGrid from "./components/SmartDataGrid";
 export { SmartDataGrid };
 
 // Export types
-export type { SmartDataGridProps, ColumnDefinition } from "./types";
+export type { SmartDataGridProps, ColumnConfig } from "./types";
 
 // Web component registration (only when in browser)
 if (typeof window !== "undefined" && typeof customElements !== "undefined") {

@@ -8,6 +8,7 @@ A powerful, feature-rich data grid library that works across all modern framewor
 - 📊 **Column Sorting** - Click headers to sort ascending/descending, click again to remove sort
 - 📄 **Smart Pagination** - Configurable page sizes with intuitive navigation
 - ✅ **Row Selection** - Single/multi-row selection with "Select All" functionality
+- 📤 **Data Export** - Export data to CSV, JSON, or Excel formats (all data or selected rows)
 - 🎨 **Theming** - Multiple built-in themes (modern, classic, dark)
 - 🔗 **Action Columns** - Button and link columns with custom click handlers
 - 📱 **Responsive Design** - Works seamlessly on desktop and mobile
@@ -95,6 +96,9 @@ const MyComponent = () => {
       theme="modern"
       searchable={true}
       paginationOptions={[5, 10, 25, 50]}
+      enableExport={true}
+      exportFormats={["csv", "json", "excel"]}
+      exportFileName="user-data"
     />
   );
 };
@@ -145,6 +149,9 @@ const MyComponent = () => {
 | `theme`             | `'modern' \| 'classic' \| 'dark'` | `'modern'`              | Visual theme                     |
 | `searchable`        | `boolean`                         | `true`                  | Show global search input         |
 | `paginationOptions` | `number[]`                        | `[10, 20, 30, 50, 100]` | Available page size options      |
+| `enableExport`      | `boolean`                         | `false`                 | Enable data export functionality |
+| `exportFormats`     | `('csv' \| 'json' \| 'excel')[]`  | `['csv', 'json']`       | Available export formats         |
+| `exportFileName`    | `string`                          | `'data-export'`         | Base filename for exported files |
 
 ### Column Configuration
 
@@ -160,15 +167,17 @@ interface ColumnConfig {
 
 ### Web Component Attributes
 
-| Attribute          | Type      | Description                              |
-| ------------------ | --------- | ---------------------------------------- |
-| `data`             | `string`  | JSON stringified array of data           |
-| `header`           | `string`  | JSON stringified column configuration    |
-| `pagination`       | `boolean` | Enable pagination                        |
-| `filter`           | `boolean` | Enable global search                     |
-| `theme`            | `string`  | Theme name ('modern', 'classic', 'dark') |
-| `page-size`        | `number`  | Default page size                        |
-| `enable-selection` | `boolean` | Enable row selection                     |
+| Attribute          | Type      | Description                                       |
+| ------------------ | --------- | ------------------------------------------------- |
+| `data`             | `string`  | JSON stringified array of data                    |
+| `header`           | `string`  | JSON stringified column configuration             |
+| `pagination`       | `boolean` | Enable pagination                                 |
+| `filter`           | `boolean` | Enable global search                              |
+| `theme`            | `string`  | Theme name ('modern', 'classic', 'dark')          |
+| `page-size`        | `number`  | Default page size                                 |
+| `enable-selection` | `boolean` | Enable row selection                              |
+| `enable-export`    | `boolean` | Enable data export functionality                  |
+| `export-formats`   | `string`  | Comma-separated export formats ('csv,json,excel') |
 
 ---
 
@@ -206,6 +215,48 @@ interface ColumnConfig {
 ---
 
 ## 🔧 Advanced Usage
+
+### Data Export
+
+The grid supports exporting data in multiple formats:
+
+```typescript
+// Export all filtered data or just selected rows
+<SmartDataGrid
+  dataSource={data}
+  columns={columns}
+  enableExport={true}
+  exportFormats={["csv", "json", "excel"]}
+  exportFileName="my-data"
+/>
+```
+
+**Export Behavior:**
+
+- If rows are selected, only selected rows are exported
+- If no rows are selected, all filtered/sorted data is exported
+- Action columns (buttons/links) are automatically excluded from exports
+- Files are downloaded with timestamps to prevent overwrites
+
+**Supported Formats:**
+
+- **CSV** - Comma-separated values, Excel compatible
+- **JSON** - Structured JSON format
+- **Excel** - .xls format that opens in Microsoft Excel
+
+### Programmatic Export
+
+```typescript
+// Access the grid ref to trigger exports programmatically
+const gridRef = useRef();
+
+const exportData = (format) => {
+  gridRef.current?.exportData(format);
+};
+
+// Usage
+<button onClick={() => exportData("csv")}>Export CSV</button>;
+```
 
 ### Programmatic Control
 
@@ -332,6 +383,8 @@ const handleSelectionChange = (selectedRows) => {
   pagination="true"
   theme="modern"
   page-size="25"
+  enable-export="true"
+  export-formats="csv,json,excel"
 ></smart-data-grid>
 ```
 
@@ -346,6 +399,9 @@ const handleSelectionChange = (selectedRows) => {
   onSelectionChange={handleSelection}
   theme="dark"
   searchable={true}
+  enableExport={true}
+  exportFormats={["csv", "excel"]}
+  exportFileName="employees"
 />
 ```
 
@@ -374,7 +430,15 @@ npm test
 
 ## 📝 Changelog
 
-### v2.1.0 (Latest)
+### v2.2.0 (Latest)
+
+- ✅ Added comprehensive data export functionality
+- ✅ Support for CSV, JSON, and Excel export formats
+- ✅ Smart export (selected rows or all data)
+- ✅ Automatic exclusion of action columns from exports
+- ✅ Customizable export filenames
+
+### v2.1.0
 
 - ✅ Fixed "Select All" to work across all pages
 - ✅ Added indeterminate checkbox states
