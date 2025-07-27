@@ -312,39 +312,29 @@ npm test
 
 ## 📝 Changelog
 
-### v2.2.1 (Latest)
+### v2.2.2 (Latest)
+
+- ✅ Minore bug fix
+
+### v2.2.1
 
 - ✅ You can now disable sorting for specific columns by adding `sortable: false`
 - ✅ Dark Theme colum selection background color issue resolved
-
-### v2.2.0
-
 - ✅ Added comprehensive data export functionality
 - ✅ Support for CSV, JSON, and Excel export formats
 - ✅ Smart export (selected rows or all data)
 - ✅ Automatic exclusion of action columns from exports
 - ✅ Customizable export filenames
-
-### v2.1.0
-
 - ✅ Fixed "Select All" to work across all pages
 - ✅ Added indeterminate checkbox states
 - ✅ Improved row selection persistence
 - ✅ Enhanced visual feedback for selections
-
-### v2.0.0
-
 - ✅ Complete rewrite with modern architecture
 - ✅ Added React component support
 - ✅ Multi-theme support
 - ✅ Advanced column types (button, link)
 - ✅ Improved accessibility
 - ✅ TypeScript definitions
-
-### v1.x
-
-- ✅ Basic data grid functionality
-- ✅ Web Component implementation
 
 ---
 
