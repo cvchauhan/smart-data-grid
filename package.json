@@ -7,6 +7,7 @@
   "types": "dist/types/index.d.ts",
   "scripts": {
     "build": "vite build && tsc",
+    "postbuild": "node copy-css.js",
     "dev": "vite build && tsc --watch",
     "preview": "vite preview",
     "lint": "eslint src --ext .ts,.tsx",
@@ -42,7 +43,8 @@
     "ts-jest": "^29.4.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vite": "^5.0.0"
+    "vite": "^5.0.0",
+    "vite-plugin-css-injected-by-js": "^3.5.2"
   },
   "exports": {
     ".": {
@@ -55,7 +57,7 @@
   "files": [
     "dist",
     "README.md",
-    "dist/SmartDataGrid.css"
+    "dist/components/SmartDataGrid.css"
   ],
   "keywords": [
     "data-grid",

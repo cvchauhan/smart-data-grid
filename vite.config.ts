@@ -6,8 +6,10 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), cssInjectedByJsPlugin()],
   resolve: {
     dedupe: ["react", "react-dom", "react-dom/client"],
   },

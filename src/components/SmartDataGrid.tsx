@@ -1,4 +1,4 @@
-// src/components/SmartDataGridReact.tsx
+// src/components/SmartDataGrid.tsx
 import React, { useEffect, useState, useMemo } from 'react';
 import { SmartDataGridProps } from '../types';
 import './SmartDataGrid.css'; // Custom styles
@@ -26,7 +26,7 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
   
   useEffect(() => {
     setRowsPerPage(stablePaginationOptions[0] || 10);
-  }, [stablePaginationOptions]);
+  }, []);
 
   useEffect(() => {
     setSelectedRows([]);
@@ -38,7 +38,7 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
     if (!searchTerm) return dataSource;
     return dataSource.filter(row =>
       columns.some(col => 
-        String(row[col.field] || '').toLowerCase().includes(searchTerm.toLowerCase())
+        String(row[col.field]).toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [dataSource, searchTerm, columns]);
@@ -79,19 +79,40 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
   };
 
   const toggleRowSelection = (row: any) => {
-    const isSelected = selectedRows.includes(row);
+    const isSelected = selectedRows.some(selectedRow => 
+      JSON.stringify(selectedRow) === JSON.stringify(row)
+    );
     const updated = isSelected
-      ? selectedRows.filter(r => r !== row)
+      ? selectedRows.filter(r => JSON.stringify(r) !== JSON.stringify(row))
       : [...selectedRows, row];
     setSelectedRows(updated);
     onSelectionChange?.(updated);
   };
 
+  // Fixed: Select all now works across all filtered/sorted data, not just current page
   const toggleSelectAll = () => {
-    const allSelected = selectedRows.length === paginatedData.length;
-    const updated = allSelected ? [] : [...paginatedData];
+    const allSelected = selectedRows.length === sortedData.length;
+    const updated = allSelected ? [] : [...sortedData];
     setSelectedRows(updated);
     onSelectionChange?.(updated);
+  };
+
+  // Helper function to check if current page's select all should be checked
+  const isCurrentPageFullySelected = () => {
+    return paginatedData.length > 0 && paginatedData.every(row => 
+      selectedRows.some(selectedRow => 
+        JSON.stringify(selectedRow) === JSON.stringify(row)
+      )
+    );
+  };
+
+  // Helper function to check if current page has any selections
+  const hasCurrentPageSelections = () => {
+    return paginatedData.some(row => 
+      selectedRows.some(selectedRow => 
+        JSON.stringify(selectedRow) === JSON.stringify(row)
+      )
+    );
   };
 
   const getSortIcon = (field: string) => {
@@ -99,34 +120,26 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
     return sortConfig.direction === 'asc' ? '↑' : '↓';
   };
 
-  // Debug info
-  console.log('Debug Info:', {
-    dataSource: dataSource.length,
-    columns: columns.length,
-    filteredData: filteredData.length,
-    paginatedData: paginatedData.length
-  });
-
   return (
-    <div className={`bg-white rounded-lg shadow-lg overflow-hidden ${theme === 'dark' ? 'bg-gray-800 text-white' : ''}`}>
+    <div className={`smart-data-grid ${theme}`}>
       {/* Header */}
-      <div className="flex justify-between items-center p-6 bg-gray-50 border-b">
-        {title && <h3 className="text-xl font-semibold text-gray-900">{title}</h3>}
-        <div className="flex items-center gap-6">
+      <div className="grid-header">
+        {title && <h3 className="grid-title">{title}</h3>}
+        <div className="grid-controls">
           {searchable && (
-            <div className="relative">
+            <div className="search-box">
               <input
                 type="text"
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-4 pr-10 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                className="search-input"
               />
-              <span className="absolute right-3 top-2.5 text-gray-400">🔍</span>
+              <span className="search-icon">🔍</span>
             </div>
           )}
           
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="rows-per-page">
             <label>Show</label>
             <select 
               value={rowsPerPage} 
@@ -134,7 +147,7 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
                 setRowsPerPage(+e.target.value);
                 setCurrentPage(1);
               }}
-              className="px-3 py-1 border border-gray-300 rounded"
+              className="rows-select"
             >
               {stablePaginationOptions.map(option => (
                 <option key={option} value={option}>{option}</option>
@@ -147,14 +160,14 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
 
       {/* Selection Info */}
       {enableSelection && selectedRows.length > 0 && (
-        <div className="flex justify-between items-center px-6 py-3 bg-blue-50 border-b text-blue-800">
+        <div className="selection-info">
           <span>{selectedRows.length} row(s) selected</span>
           <button 
             onClick={() => {
               setSelectedRows([]);
               onSelectionChange?.([]);
             }}
-            className="px-3 py-1 border border-blue-300 text-blue-600 rounded hover:bg-blue-100"
+            className="clear-selection"
           >
             Clear
           </button>
@@ -162,17 +175,22 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 sticky top-0">
+      <div className="table-container">
+        <table className="modern-table">
+          <thead>
             <tr>
               {enableSelection && (
-                <th className="w-12 px-6 py-4 text-center">
+                <th className="checkbox-column">
                   <input
                     type="checkbox"
                     onChange={toggleSelectAll}
-                    checked={selectedRows.length === paginatedData.length && paginatedData.length > 0}
-                    className="w-4 h-4"
+                    checked={selectedRows.length === sortedData.length && sortedData.length > 0}
+                    ref={(input) => {
+                      if (input) {
+                        input.indeterminate = hasCurrentPageSelections() && !isCurrentPageFullySelected() && selectedRows.length < sortedData.length;
+                      }
+                    }}
+                    className="checkbox"
                   />
                 </th>
               )}
@@ -180,81 +198,74 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
                 <th 
                   key={col.field}
                   onClick={() => handleSort(col.field)}
-                  className="px-6 py-4 text-left font-semibold text-gray-900 cursor-pointer hover:bg-gray-100"
+                  className="sortable-header"
                 >
-                  <div className="flex justify-between items-center">
+                  <div className="header-content">
                     <span>{col.header}</span>
-                    <span className="text-xs text-gray-400">{getSortIcon(col.field)}</span>
+                    <span className="sort-icon">{getSortIcon(col.field)}</span>
                   </div>
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {dataSource.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length + (enableSelection ? 1 : 0)} className="px-6 py-12 text-center text-gray-500 italic">
-                  No data source provided
-                </td>
-              </tr>
-            ) : columns.length === 0 ? (
-              <tr>
-                <td colSpan={10} className="px-6 py-12 text-center text-gray-500 italic">
-                  No columns defined
-                </td>
-              </tr>
-            ) : paginatedData.length > 0 ? (
-              paginatedData.map((row, i) => (
-                <tr 
-                  key={i} 
-                  className={`border-b hover:bg-gray-50 ${selectedRows.includes(row) ? 'bg-blue-50' : ''}`}
-                >
-                  {enableSelection && (
-                    <td className="w-12 px-6 py-4 text-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedRows.includes(row)}
-                        onChange={() => toggleRowSelection(row)}
-                        className="w-4 h-4"
-                      />
-                    </td>
-                  )}
-                  {columns.map(col => {
-                    const value = row[col.field];
-                    const show = col.showLinkConditions?.(row) ?? true;
+            {paginatedData.length > 0 ? (
+              paginatedData.map((row, i) => {
+                const isSelected = selectedRows.some(selectedRow => 
+                  JSON.stringify(selectedRow) === JSON.stringify(row)
+                );
+                return (
+                  <tr 
+                    key={i} 
+                    className={isSelected ? 'selected' : ''}
+                  >
+                    {enableSelection && (
+                      <td className="checkbox-column">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleRowSelection(row)}
+                          className="checkbox"
+                        />
+                      </td>
+                    )}
+                    {columns.map(col => {
+                      const value = row[col.field];
+                      const show = col.showLinkConditions?.(row) ?? true;
 
-                    if (col.type === 'link' && show) {
-                      return (
-                        <td key={col.field} className="px-6 py-4">
-                          <button 
-                            className="text-blue-600 hover:text-blue-800 underline" 
-                            onClick={() => col.clickFn?.(row)}
-                          >
-                            {value}
-                          </button>
-                        </td>
-                      );
-                    }
-                    if (col.type === 'button' && show) {
-                      return (
-                        <td key={col.field} className="px-6 py-4">
-                          <button 
-                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700" 
-                            onClick={() => col.clickFn?.(row)}
-                          >
-                            {value}
-                          </button>
-                        </td>
-                      );
-                    }
-                    return <td key={col.field} className="px-6 py-4">{value}</td>;
-                  })}
-                </tr>
-              ))
+                      if (col.type === 'link' && show) {
+                        return (
+                          <td key={col.field}>
+                            <button 
+                              className="link-button" 
+                              onClick={() => col.clickFn?.(row)}
+                            >
+                              {value}
+                            </button>
+                          </td>
+                        );
+                      }
+                      if (col.type === 'button' && show) {
+                        return (
+                          <td key={col.field}>
+                            <button 
+                              className="action-button" 
+                              onClick={() => col.clickFn?.(row)}
+                            >
+                              {value}
+                            </button>
+                          </td>
+                        );
+                      }
+                      return <td key={col.field}>{value}</td>;
+                    })}
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan={columns.length + (enableSelection ? 1 : 0)} className="px-6 py-12 text-center text-gray-500 italic">
-                  No data matches your search
+                <td colSpan={columns.length + (enableSelection ? 1 : 0)} className="no-data">
+                  No data available
                 </td>
               </tr>
             )}
@@ -263,72 +274,67 @@ const SmartDataGrid: React.FC<SmartDataGridProps> = ({
       </div>
 
       {/* Footer */}
-      {sortedData.length > 0 && (
-        <div className="flex justify-between items-center px-6 py-4 bg-gray-50 border-t">
-          <div className="text-sm text-gray-600">
-            Showing {((currentPage - 1) * rowsPerPage) + 1} to {Math.min(currentPage * rowsPerPage, sortedData.length)} of {sortedData.length} entries
-            {searchTerm && ` (filtered from ${dataSource.length} total entries)`}
+      <div className="grid-footer">
+        <div className="info">
+          Showing {((currentPage - 1) * rowsPerPage) + 1} to {Math.min(currentPage * rowsPerPage, sortedData.length)} of {sortedData.length} entries
+          {searchTerm && ` (filtered from ${dataSource.length} total entries)`}
+          {selectedRows.length > 0 && ` • ${selectedRows.length} selected`}
+        </div>
+        
+        <div className="pagination">
+          <button 
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+            className="page-btn"
+          >
+            ⏮️
+          </button>
+          <button 
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            className="page-btn"
+          >
+            ◀️
+          </button>
+          
+          <div className="page-numbers">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const pageNum = currentPage <= 3 
+                ? i + 1 
+                : currentPage >= totalPages - 2 
+                  ? totalPages - 4 + i 
+                  : currentPage - 2 + i;
+              
+              if (pageNum < 1 || pageNum > totalPages) return null;
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`page-number ${currentPage === pageNum ? 'active' : ''}`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
           </div>
           
-          <div className="flex items-center gap-1">
-            <button 
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-              className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              ⏮️
-            </button>
-            <button 
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              ◀️
-            </button>
-            
-            <div className="flex gap-1 mx-2">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const pageNum = currentPage <= 3 
-                  ? i + 1 
-                  : currentPage >= totalPages - 2 
-                    ? totalPages - 4 + i 
-                    : currentPage - 2 + i;
-                
-                if (pageNum < 1 || pageNum > totalPages) return null;
-                
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    className={`px-3 py-1 border rounded ${
-                      currentPage === pageNum 
-                        ? 'bg-blue-600 text-white border-blue-600' 
-                        : 'border-gray-300 hover:bg-gray-100'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-            </div>
-            
-            <button 
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              ▶️
-            </button>
-            <button 
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              ⏭️
-            </button>
-          </div>
+          <button 
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+            className="page-btn"
+          >
+            ▶️
+          </button>
+          <button 
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+            className="page-btn"
+          >
+            ⏭️
+          </button>
         </div>
-      )}
+      </div>
     </div>
   );
 };
