@@ -43,6 +43,7 @@ const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
   // Filter data based on search
   const filteredData = useMemo(() => {
     if (!searchTerm) return dataSource;
+    setCurrentPage(1); // Reset to first page on search
     return dataSource.filter((row) =>
       columns.some((col) =>
         String(row[col.field]).toLowerCase().includes(searchTerm.toLowerCase())
