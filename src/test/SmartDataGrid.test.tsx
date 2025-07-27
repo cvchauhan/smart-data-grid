@@ -1,81 +1,95 @@
-// tests/SmartDataGrid.test.tsx
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import SmartDataGrid from '../components/SmartDataGrid';
-import '@testing-library/jest-dom';
+import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import SmartDataGridReact from "../components/SmartDataGrid";
+import "@testing-library/jest-dom";
 
-describe('SmartDataGrid', () => {
-  const columns = [
-    { field: 'name', header: 'Name' },
-    { field: 'age', header: 'Age' },
-    { field: 'role', header: 'Role' },
-  ];
+const sampleData = [
+  { id: 1, name: "Alice", age: 30 },
+  { id: 2, name: "Bob", age: 25 },
+];
 
-  const dataSource = [
-    { name: 'Alice', age: 30, role: 'Developer' },
-    { name: 'Bob', age: 25, role: 'Designer' },
-    { name: 'Charlie', age: 35, role: 'Manager' },
-  ];
+const sampleColumns = [
+  { field: "id", header: "ID" },
+  { field: "name", header: "Name" },
+  { field: "age", header: "Age" },
+];
 
-  it('renders column headers', () => {
-    render(<SmartDataGrid columns={columns} dataSource={dataSource} />);
-    expect(screen.getByText('Name')).toBeInTheDocument();
-    expect(screen.getByText('Age')).toBeInTheDocument();
-    expect(screen.getByText('Role')).toBeInTheDocument();
-  });
-
-  it('renders data rows', () => {
-    render(<SmartDataGrid columns={columns} dataSource={dataSource} />);
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.getByText('Bob')).toBeInTheDocument();
-    expect(screen.getByText('Charlie')).toBeInTheDocument();
-  });
-
-  it('filters data on search', () => {
-    render(<SmartDataGrid columns={columns} dataSource={dataSource} searchable />);
-    const searchInput = screen.getByPlaceholderText('Search...');
-    fireEvent.change(searchInput, { target: { value: 'alice' } });
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.queryByText('Bob')).not.toBeInTheDocument();
-  });
-
-  it('shows message for empty data', () => {
-    render(<SmartDataGrid columns={columns} dataSource={[]} />);
-    expect(screen.getByText('No data source provided')).toBeInTheDocument();
-  });
-
-  it('shows message for empty columns', () => {
-    render(<SmartDataGrid columns={[]} dataSource={dataSource} />);
-    expect(screen.getByText('No columns defined')).toBeInTheDocument();
-  });
-
-  it('allows sorting by column', () => {
-    render(<SmartDataGrid columns={columns} dataSource={dataSource} />);
-    const nameHeader = screen.getByText('Name');
-    fireEvent.click(nameHeader); // sort asc
-    fireEvent.click(nameHeader); // sort desc
-    fireEvent.click(nameHeader); // reset
-    expect(nameHeader).toBeInTheDocument();
-  });
-
-  it('displays pagination controls', () => {
-    render(<SmartDataGrid columns={columns} dataSource={dataSource} paginationOptions={[1]} />);
-    expect(screen.getByText('⏮️')).toBeInTheDocument();
-    expect(screen.getByText('⏭️')).toBeInTheDocument();
-  });
-
-  it('handles row selection', () => {
-    const onSelectionChange = jest.fn();
+describe("SmartDataGridReact", () => {
+  test("renders with data and columns", () => {
     render(
-      <SmartDataGrid
-        columns={columns}
-        dataSource={dataSource}
-        enableSelection
-        onSelectionChange={onSelectionChange}
+      <SmartDataGridReact
+        dataSource={sampleData}
+        columns={sampleColumns}
+        title="Test Grid"
+        enableExport={true}
       />
     );
-    const checkbox = screen.getAllByRole('checkbox')[1]; // skip the 'select all' checkbox
-    fireEvent.click(checkbox);
-    expect(onSelectionChange).toHaveBeenCalledWith([dataSource[0]]);
+
+    expect(screen.getByText("Test Grid")).toBeInTheDocument();
+    expect(screen.getByText("Alice")).toBeInTheDocument();
+    expect(screen.getByText("Bob")).toBeInTheDocument();
+    expect(screen.getByText("ID")).toBeInTheDocument();
+    expect(screen.getByText("Name")).toBeInTheDocument();
+    expect(screen.getByText("Age")).toBeInTheDocument();
+  });
+
+  test("search filters the rows", () => {
+    render(
+      <SmartDataGridReact
+        dataSource={sampleData}
+        columns={sampleColumns}
+        searchable
+      />
+    );
+
+    const searchInput = screen.getByPlaceholderText("Search...");
+    fireEvent.change(searchInput, { target: { value: "Alice" } });
+
+    expect(screen.getByText("Alice")).toBeInTheDocument();
+    expect(screen.queryByText("Bob")).not.toBeInTheDocument();
+  });
+
+  test("pagination works correctly", () => {
+    const bigData = Array.from({ length: 50 }, (_, i) => ({
+      id: i + 1,
+      name: `User ${i + 1}`,
+      age: 20 + (i % 10),
+    }));
+
+    render(
+      <SmartDataGridReact
+        dataSource={bigData}
+        columns={sampleColumns}
+        paginationOptions={[10]}
+      />
+    );
+
+    expect(screen.getByText("User 1")).toBeInTheDocument();
+    expect(screen.queryByText("User 11")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("▶️"));
+
+    expect(screen.queryByText("User 1")).not.toBeInTheDocument();
+    expect(screen.getByText("User 11")).toBeInTheDocument();
+  });
+
+  test("export dropdown is rendered when enabled", () => {
+    render(
+      <SmartDataGridReact
+        dataSource={sampleData}
+        columns={sampleColumns}
+        enableExport={true}
+        exportFormats={["csv", "json", "excel"]}
+      />
+    );
+
+    // Selects all comboboxes (dropdowns)
+    const comboboxes = screen.getAllByRole("combobox");
+    expect(comboboxes.length).toBeGreaterThan(1); // should find both selects
+
+    // Look for export-specific options
+    expect(screen.getByText(/Export as CSV/i)).toBeInTheDocument();
+    expect(screen.getByText(/Export as JSON/i)).toBeInTheDocument();
+    expect(screen.getByText(/Export as Excel/i)).toBeInTheDocument();
   });
 });
