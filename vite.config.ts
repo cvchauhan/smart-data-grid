@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "url";
 import path from "path";
+import dts from "vite-plugin-dts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -9,7 +10,7 @@ const __dirname = path.dirname(__filename);
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
 export default defineConfig({
-  plugins: [react(), cssInjectedByJsPlugin()],
+  plugins: [react(), cssInjectedByJsPlugin(), dts()],
   resolve: {
     dedupe: ["react", "react-dom", "react-dom/client"],
   },
@@ -20,8 +21,8 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, "src/index.ts"),
       name: "SmartDataGrid",
-      fileName: "smart-data-grid",
-      formats: ["es", "umd"],
+      fileName: (format) => `smart-data-grid.${format}.js`, // ✅ here
+      formats: ["es", "umd", "cjs"],
     },
     rollupOptions: {
       external: ["react", "react-dom", "react-dom/client"],

@@ -6,6 +6,7 @@ import SmartDataGrid from "./components/SmartDataGrid";
 
 // Export both versions
 export { SmartDataGrid };
+export default SmartDataGrid;
 
 // Export types
 export type { SmartDataGridProps, ColumnConfig } from "./types";
