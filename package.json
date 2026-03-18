@@ -2,11 +2,12 @@
   "name": "smart-data-grid",
   "version": "3.0.0",
   "description": "Modern Smart Data Grid - React Component & Web Component",
-  "main": "dist/smart-data-grid.cjs.js",
+  "main": "dist/smart-data-grid.umd.js",
   "module": "dist/smart-data-grid.es.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "vite build && tsc",
+    "local-test": "npm run build && npm link",
     "postbuild": "node copy-css.js",
     "dev": "vite build && tsc --watch",
     "preview": "vite preview",
@@ -49,21 +50,13 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "module": "./dist/smart-data-grid.es.js",
-      "require": "./dist/smart-data-grid.cjs.js",
-      "import": "./dist/smart-data-grid.es.js"
-    },
-    "./web-component": {
-      "default": "./dist/smart-data-grid-wc.js"
-    },
-    "./styles": "./dist/style.css"
+      "import": "./dist/smart-data-grid.es.js",
+      "require": "./dist/smart-data-grid.umd.js"
+    }
   },
   "sideEffects": false,
   "files": [
-    "dist",
-    "README.md",
-    "dist/components/SmartDataGrid.css"
+    "dist"
   ],
   "keywords": [
     "data-grid",

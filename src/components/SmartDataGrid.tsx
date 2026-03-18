@@ -1,9 +1,8 @@
-// src/components/SmartDataGridReact.tsx
 import React, { useEffect, useState, useMemo } from "react";
 import { SmartDataGridProps } from "../types";
 import "./SmartDataGrid.css"; // Custom styles
 
-const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
+const SmartDataGrid: React.FC<SmartDataGridProps> = ({
   dataSource = [],
   columns = [],
   defaultSortKey,
@@ -541,4 +540,4 @@ const SmartDataGridReact: React.FC<SmartDataGridProps> = ({
   );
 };
 
-export default SmartDataGridReact;
+export default SmartDataGrid;

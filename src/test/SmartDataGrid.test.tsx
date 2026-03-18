@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import SmartDataGridReact from "../components/SmartDataGrid";
+import SmartDataGrid from "../components/SmartDataGrid";
 import "@testing-library/jest-dom";
 
 const sampleData = [
@@ -14,10 +14,10 @@ const sampleColumns = [
   { field: "age", header: "Age" },
 ];
 
-describe("SmartDataGridReact", () => {
+describe("SmartDataGrid", () => {
   test("renders with data and columns", () => {
     render(
-      <SmartDataGridReact
+      <SmartDataGrid
         dataSource={sampleData}
         columns={sampleColumns}
         title="Test Grid"
@@ -35,7 +35,7 @@ describe("SmartDataGridReact", () => {
 
   test("search filters the rows", () => {
     render(
-      <SmartDataGridReact
+      <SmartDataGrid
         dataSource={sampleData}
         columns={sampleColumns}
         searchable
@@ -57,7 +57,7 @@ describe("SmartDataGridReact", () => {
     }));
 
     render(
-      <SmartDataGridReact
+      <SmartDataGrid
         dataSource={bigData}
         columns={sampleColumns}
         paginationOptions={[10]}
@@ -75,7 +75,7 @@ describe("SmartDataGridReact", () => {
 
   test("export dropdown is rendered when enabled", () => {
     render(
-      <SmartDataGridReact
+      <SmartDataGrid
         dataSource={sampleData}
         columns={sampleColumns}
         enableExport={true}
