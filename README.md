@@ -32,7 +32,7 @@ npm install smart-data-grid
 
 ```tsx
 import React, { useState } from "react";
-import SmartDataGrid from "smart-data-grid/react";
+import SmartDataGrid from "smart-data-grid";
 
 const MyComponent = () => {
   const data = [
@@ -312,7 +312,11 @@ npm test
 
 ## 📝 Changelog
 
-### v2.2.2 (Latest)
+### 3.0.0 (Latest)
+
+- ✅ All bug fix
+
+### v2.2.2
 
 - ✅ Minore bug fix
 

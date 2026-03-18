@@ -1,12 +1,13 @@
 {
   "name": "smart-data-grid",
-  "version": "2.2.4",
+  "version": "3.0.0",
   "description": "Modern Smart Data Grid - React Component & Web Component",
-  "main": "dist/index.js",
-  "module": "dist/smart-data-grid.mjs",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/smart-data-grid.umd.js",
+  "module": "dist/smart-data-grid.es.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "vite build && tsc",
+    "local-test": "npm run build && npm link",
     "postbuild": "node copy-css.js",
     "dev": "vite build && tsc --watch",
     "preview": "vite preview",
@@ -43,21 +44,19 @@
     "ts-jest": "^29.4.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
-    "vite": "^5.0.0",
-    "vite-plugin-css-injected-by-js": "^3.5.2"
+    "vite": "^7.0.6",
+    "vite-plugin-css-injected-by-js": "^3.5.2",
+    "vite-plugin-dts": "^4.5.4"
   },
   "exports": {
     ".": {
-      "import": "./dist/smart-data-grid.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/types/index.d.ts"
-    },
-    "./styles": "./dist/style.css"
+      "import": "./dist/smart-data-grid.es.js",
+      "require": "./dist/smart-data-grid.umd.js"
+    }
   },
+  "sideEffects": false,
   "files": [
-    "dist",
-    "README.md",
-    "dist/components/SmartDataGrid.css"
+    "dist"
   ],
   "keywords": [
     "data-grid",
